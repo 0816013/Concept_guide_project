@@ -1,0 +1,410 @@
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import { PropTypes } from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Graph from '../newdirected/Graph';
+import VideoSequence from './VideoSequence';
+import ConceptSequence from './ConceptSequence';
+import Legend from './Legend';
+import WordCloud from './WordCloud';
+import RelatedVideosPanel from './RelatedVideosPanel';
+import ConceptDetailPanel from './ConceptDetailPanel';
+import MapApprovPanel from './MapApprovPanel';
+import Notification from './Notification';
+import Editor from './Editor'
+import Cards from './Cards'
+const styles = ({
+    container: {
+        // justifyContent: 'center',
+        display: 'flex',
+        flexDirection: "row",
+        // flexGrow: 1,
+        flexWrap: 'wrap',
+        // margin:10,
+        // padding:10
+        paddingTop: 10,
+        paddingLeft: 10,
+        // marginTop:10,
+        marginLeft: 10
+
+    },
+    Editor: {
+        // width: 200,
+        // height:800,
+        position: 'fixed',
+        bottom:10,
+        right:20
+      },
+    LeftField: {
+        // display:'flex',
+        // width: 900,
+        // height: 700,
+        // overflowX: "scroll",
+        // overflowY: "hidden",
+        // padding: 20,
+        // margin : 20,
+    },
+});
+var SentRange = []
+var ConceptRange = []
+class LearningMapFrame extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            HoverConceptIndex: null,
+            HoverVideoIndex: null,
+            PopoverIndexes: [],
+            Path_ConceptIndex: null,
+            BigCircleIndex: null,
+            Hightlight_word: null,
+            content:[
+                " "
+            ],
+            newCardContent:false,
+            MapConsult: false,
+            cardEditing:false,
+            bool_reply:false,
+            editingcardID:"",
+            editorContent:"",
+            parentId:"",
+            cardReply:false,
+            replycardID:"",
+            replyContent:"",
+
+
+            Card_ConceptIndex: null,
+            HighlightRelatedNodes:[],
+            };
+        this.SetEditorContent = this.SetEditorContent.bind(this);
+        this.SetParentId = this.SetParentId.bind(this);
+        this.SetReplyContent = this.SetReplyContent.bind(this);
+        this.SetHoverConceptIndex = this.SetHoverConceptIndex.bind(this);
+        this.SetMapConsult = this.SetMapConsult.bind(this);
+        this.SetNewCardContent = this.SetNewCardContent.bind(this);
+        this.SetHoverVideoIndex = this.SetHoverVideoIndex.bind(this);
+        this.SetPopoverIndexes = this.SetPopoverIndexes.bind(this);
+        this.SetPath_ConceptIndex = this.SetPath_ConceptIndex.bind(this);
+        this.SetBigCircleIndex = this.SetBigCircleIndex.bind(this);
+        this.ClearHoverConcept = this.ClearHoverConcept.bind(this);
+        // Adding words hightlighting functions by YHT
+        this.SetHightlightWord = this.SetHightlightWord.bind(this);
+        this.SetCardEdit = this.SetCardEdit.bind(this);
+        this.SetCardReply = this.SetCardReply.bind(this);
+        this.videoClick = this.videoClick.bind(this);
+
+        //Add card order, Nov JX
+        this.SetCard_ConceptIndex = this.SetCard_ConceptIndex.bind(this);
+        this.SetHighlightRelatedNodes = this.SetHighlightRelatedNodes.bind(this);
+    }
+    SetEditorContent(content){
+        this.setState({editorContent:content});
+    }
+    SetParentId(parentId){
+        this.setState({parentId:parentId});
+    }
+    SetCardEdit(bool, bool_reply ,commentId){
+        this.setState({cardEditing:bool,// for editing
+                        bool_reply:bool_reply,// for replying
+                        editingcardID:commentId});// cardId
+    }
+
+    SetReplyContent(replyContent){
+        this.setState({replyContent:replyContent});
+    }
+    SetCardReply(bool, commentId){
+        this.setState({cardReply:bool,
+                        replycardID:commentId});
+    }
+
+    videoClick(vid,index){//moved from RelatedVideoPanel
+        console.log("[click],RelatedVideos",",",vid,",",index);
+        var currentdate = new Date(); 
+        var datetime = "Video ID- " + vid + " Clicked: " + currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+        console.log(datetime);
+        this.props.SetVideoId(vid);
+        this.props.SetProgress(4);
+    }
+
+    componentWillMount() {
+        console.log("[graph]", ",", this.props.data.search_info.key);
+        // console.log("cheeeee",this.props.data.concept_relationship.nodes);
+        // calcalate SentimentScoreRange [SentScoreMin,SentScoreMax];
+        var tmpList = [];
+        for (var e in this.props.data.videos_info) {
+
+            tmpList.push(this.props.data.videos_info[e].userFeedbackScore);
+        };
+        var tmpList2 = [];
+        for (var e in this.props.data.concept_relationship.nodes) {
+            tmpList2.push(this.props.data.concept_relationship.nodes[e].count);
+        };
+        // console.log("SentRange",[Math.min(...tmpList),Math.max(...tmpList)]);
+        // console.log("tmpList2",tmpList2);
+        SentRange = [Math.min(...tmpList), Math.max(...tmpList)];
+        ConceptRange = [Math.min(...tmpList2), Math.max(...tmpList2), tmpList2.reduce((a, b) => a + b, 0)];
+    }
+    SetHoverConceptIndex(i, word) {
+        // console.log("[hover] conceptMapNode",i);
+        // Adding concept panel words highlighting
+        console.log("word = ", word);
+        console.log("i = ",i);
+        this.setState({
+            HoverConceptIndex: i,
+            HightlightWord: word
+        });
+        this.setState({
+            content: word
+        });
+        
+        this.props.SetHoverConceptIndexAtIndex(i);    
+        //console.log(word);
+        //this.forceUpdate();
+    }
+    ClearHoverConcept(){
+        this.setState({content:" "});
+        console.log("ClearHoverConcept");
+    }
+    // Adding by YHT
+    SetHightlightWord(word) {
+
+        // Adding concept panel words highlighting
+        // Hightlight word in editor
+        this.setState({
+            HightlightWord: word
+        });
+        console.log("call set hightlight");
+        console.log(word);
+        // call function in Editor.js
+
+    }
+    SetHoverVideoIndex(vid) {
+        this.setState({
+            HoverVideoIndex: vid
+        });
+    };
+    SetPopoverIndexes(method, index) {
+
+        if (method == "add") {
+            if (this.state.PopoverIndexes.includes(index) == false) {
+                this.setState({
+                    PopoverIndexes: [...this.state.PopoverIndexes, index]
+                    // PopoverIndexes:this.state.PopoverIndexes.concat([index])
+                });
+            }
+        } else if (method == "remove") {
+            this.setState({
+                PopoverIndexes: this.state.PopoverIndexes.filter(val => val !== index)
+            });
+        } else if (method == "clear") {
+            this.setState({
+                PopoverIndexes: []
+            });
+        }
+    }
+    SetPath_ConceptIndex(method, index) {
+        if (method == "add") {
+            this.setState({
+                Path_ConceptIndex: index
+            });
+        } else if (method == "clear") {
+            console.log("[close] ConceptDetailPanel");
+            this.setState({
+                Path_ConceptIndex: null,
+                BigCircleIndex: null,
+
+            });
+        }
+    }
+    //Nov JX
+    SetCard_ConceptIndex(method, index){
+        if (method == 'order by index'){
+            console.log('cards ordered by index. from learningMap', index);
+            this.setState({
+                Card_ConceptIndex: index
+            });
+
+        } else if (method == 'clear'){
+            console.log('cards ordered by normal order.');
+            this.setState({
+                Card_ConceptIndex: null
+            });
+        }
+    }
+    SetHighlightRelatedNodes(relatednodes_list){
+        
+        this.setState({HighlightRelatedNodes: relatednodes_list})
+        console.log('line204 learningmapframe', relatednodes_list)
+        
+
+
+    }
+
+    SetMapConsult(method){
+        if (method == "add"){
+            /*     正式的讓後端去取db資料，算出新的Json檔
+            fetch('http://localhost:8001/MapPreview/<Keyword>')     //跟後端連結去getJson
+            .then(function (res) {
+            //    console.log(res.json());
+                return res.json();
+            }).then(function(myJson) {
+                this.props.SetNewJson(myJson);
+                return myJson;
+            });
+            */
+            this.setState({MapConsult: true});
+            
+        } else if (method =="dont_ask") {
+            console.log("SetMapConsult(false)!!)");
+            this.setState({MapConsult:false });
+    }
+    }
+    SetBigCircleIndex(index) {
+        this.setState({
+            BigCircleIndex: index
+        });
+    }
+    
+    SetNewCardContent(content) {
+        this.setState({
+            newCardContent: content
+        });
+    }
+    componentDidUpdate(prevState){
+        if(this.state.HoverConceptIndex!==prevState.HoverConceptIndex){
+            console.log("prevConceptIndex = ",prevState.HoverConceptIndex," >>> ", this.state.HoverConceptIndex);
+        }
+    }
+
+    render() {
+        //console.log(this.props.data.VideoSequence_ConceptInfo);
+        var HighlightConceptTextIndex = this.state.HoverVideoIndex == null ? [] : this.props.data.VideoSequence_ConceptInfo[this.state.HoverConceptIndex][this.state.HoverVideoIndex];
+        // console.log("windowheight",window.innerHeight);
+        //console.log ('data in learningmapframe line240', this.props.data);
+        return (
+            <div style={styles.container}>
+                {/* {this.props.data.search_info.key} */}
+                {/* <div style = {styles.LeftField} > */}
+                <div width={window.innerWidth - 50} height={window.innerHeight - 100}>
+                    <Typography variant="headline" component="h5">
+                        {this.props.data.search_info.key}
+                    </Typography>
+                    <Legend Path_ConceptIndex={this.state.Path_ConceptIndex}
+                        BigCircleIndex={this.state.BigCircleIndex == null ? this.state.Path_ConceptIndex : this.state.BigCircleIndex}
+                        ConceptRange={ConceptRange}
+                        data={this.props.data.concept_relationship.nodes}
+                    />
+                    {/* <WordCloud videos_info={this.props.data.videos_info} HoverVideoIndex={this.state.HoverVideoIndex}/> */}
+                    <Graph data={this.props.data}
+                        HoverConceptIndex={this.props.HoverConceptIndexAtIndex}
+                        SetHoverConceptIndex={this.SetHoverConceptIndex}
+                        ClearHoverConcept = {this.ClearHoverConcept} 
+                        OpenDrawer={(text) => props.OpenDrawer(text)}
+                        width={window.innerWidth/2 - 50} height={window.innerHeight - 100}
+                        SentRange={SentRange}
+                        ConceptRange={ConceptRange}
+                        SetHoverVideoIndex={this.SetHoverVideoIndex}
+                        HoverVideoIndex={this.state.HoverVideoIndex}
+                        Path_ConceptIndex={this.state.Path_ConceptIndex}
+                        SetPath_ConceptIndex={this.SetPath_ConceptIndex}
+                        BigCircleIndex={this.state.BigCircleIndex}
+                        SetHightlightWord={this.SetHightlightWord}
+                        HoverConceptIndexAtIndex = {this.props.HoverConceptIndexAtIndex}
+                        HighlightNodesAtIndex = {this.props.HighlightNodesAtIndex}
+                        DirectNodesAtIndex = {this.props.DirectNodesAtIndex}
+                        SetDirectNodesAtIndex = {this.props.SetDirectNodesAtIndex}
+                        SetHighlightNodesAtIndex = {this.props.SetHighlightNodesAtIndex}
+
+                        //nov JX
+                        SetCard_ConceptIndex={this.SetCard_ConceptIndex}
+                        HighlightRelatedNodes = {this.state.HighlightRelatedNodes}
+                        HighlightRelatedNodes_onoff = {this.state.HighlightRelatedNodes_onoff}
+                        //key={this.state.HighlightRelatedNodes}
+                    />
+                </div>
+                
+                <div>
+                    <div>
+                    <Cards 
+                            SetEditorContent = {this.SetEditorContent}
+                            SetParentId = {this.SetParentId}
+                            SetReplyContent = {this.SetReplyContent}
+                            newCardContent = {this.state.newCardContent}
+                            searchInfo = {this.props.data.search_info.key}
+                            SetCardEdit = {this.SetCardEdit}
+                            editingcardID = {this.state.editingcardID}
+                            cardEditing = {this.state.cardEditing}
+                            SetCardReply = {this.state.SetCardReply}
+                            replycardID = {this.state.replycardID}
+                            cardReply = {this.state.cardReply}
+                            Card_ConceptIndex={this.state.Card_ConceptIndex}
+                            SetHighlightRelatedNodes = {this.SetHighlightRelatedNodes}
+                            key={this.state.Card_ConceptIndex}
+                            videoClick = {this.videoClick}
+                            videoId = {this.props.videoId}
+                            />
+                    </div>
+                    <div style = {styles.Editor}>
+                    <Editor content = {this.state.content}
+                            userId={this.props.userId}
+                            SetMapConsult = {this.SetMapConsult}
+                            // SetNewJson = {this.props.SetNewJson}
+                            searchInfo = {this.props.data.search_info.key}
+                            SetNewCardContent = {this.SetNewCardContent}
+                            SetCardEdit = {this.SetCardEdit}
+                            cardEditing = {this.state.cardEditing}
+                            bool_reply = {this.state.bool_reply}
+                            editingcardID = {this.state.editingcardID}
+                            editorContent={this.state.editorContent}
+                            
+                            parentId={this.state.parentId}
+                            SetCardReply={this.state.SetCardReply}
+                            cardReply={this.state.cardReply}
+                            replycardID={this.state.replycardID}
+                            replyContent={this.state.replyContent}
+                            SetVisJson = {this.props.SetVisJson}
+                    />
+                    {/*<button onClick={()=>this.SetMapConsult("add")}
+                            className="btn btn-primary btn-lg m-5">Show New Map</button>*/}
+                    </div>  
+                </div>
+
+                <ConceptDetailPanel
+                    data={this.props.data}
+                    Path_ConceptIndex={this.state.Path_ConceptIndex}
+                    SetPath_ConceptIndex={this.SetPath_ConceptIndex}
+                    SentRange={SentRange}
+                    SetHoverVideoIndex={this.SetHoverVideoIndex}
+                    SetHightlightWord={this.SetHightlightWord}
+                    HoverVideoIndex={this.state.HoverVideoIndex}
+                    HighlightConceptTextIndex={HighlightConceptTextIndex}
+                    BigCircleIndex={this.state.BigCircleIndex}
+                    SetBigCircleIndex={this.SetBigCircleIndex}
+                    SetProgress = {this.props.SetProgress} 
+                    SetNewCardContent = {this.SetNewCardContent}
+                    SetVideoId = {this.props.SetVideoId} 
+
+                    SetCard_ConceptIndex={this.SetCard_ConceptIndex}
+                    videoClick = {this.videoClick}
+                />
+                <MapApprovPanel 
+                    data={this.props.data}
+                    MapConsult={this.state.MapConsult}
+                    SetMapConsult={this.SetMapConsult}
+                    SetVisJson = {this.props.SetVisJson}
+                    //SetNewJson = {this.props.SetNewJson}   
+                    //NewJson = {this.props.NewJson}
+                />
+                <Notification open={this.state.Path_ConceptIndex == null} />
+            </div>
+
+        );
+    }
+}
+export default LearningMapFrame;
