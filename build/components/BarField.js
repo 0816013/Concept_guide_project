@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import HomeIcon from '@material-ui/icons/Home';
-
+import Select from 'react-select'
 
 const styles = ({
     root: {
@@ -53,7 +53,9 @@ class BarField extends Component {
     MenuOnClick(){
         // console.log("menu click");
         var tmp = this;
-        fetch('https://conceptdiscussion.herokuapp.com/SearchHistory/')
+        // heroku to local, apr HYT
+        // fetch('https://conceptdiscussion.herokuapp.com/SearchHistory/')
+        fetch('http://localhost:8001/SearchHistory/')
         .then(function (res) {
         //    console.log(res.json());
             return res.json();

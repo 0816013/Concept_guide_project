@@ -97,7 +97,14 @@ class MapApprovPanel extends Component {
         */
     }
     ApproveClicked(){
-        fetch('http://localhost:8001/Update/<Keyword>')     //跟後端連結去getJson
+        // heroku to local, apr HYT
+        fetch('http://localhost:8001/Update/<Keyword>', {
+            headers : { 
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+             }
+      
+          })     //跟後端連結去getJson
             .then(function (res) {
             //    console.log(res.json());
                 return res.json();

@@ -68,6 +68,9 @@ class Node extends Component {
             anchorEl: null,
             studentslist: [],
             hovering:false,
+            //may HYT
+            group2click:false,
+            prev_node: null
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
@@ -110,9 +113,9 @@ class Node extends Component {
     }
 
     
-
+    
     handleClick(e) {
-        console.log("[click],conceptMapNode",",",this.props.data.name,",",this.props.data.index);
+        console.log("[click],conceptMapNode",",",this.props.data.name,",",this.props.data.index,",", this.props.data.group );
         //console.log(this.pros);
         // d3.select(ReactDOM.findDOMNode(this)).select('text')
         // .transition()
@@ -121,13 +124,34 @@ class Node extends Component {
         // .style("font-style","italic")
         // .style("text-shadow","2px 2px 4px #888")
         // .style("font-size","19");
-
-        this.setState({
-            anchorEl: ReactDOM.findDOMNode(this),
-        });
-
-        this.props.SetPath_ConceptIndex("add", this.props.data.index);
-        this.props.SetCard_ConceptIndex("order by index", this.props.data.index);
+        if(this.props.data.group == 1){
+            this.setState({
+                anchorEl: ReactDOM.findDOMNode(this),
+            });
+    
+            this.props.SetPath_ConceptIndex("add", this.props.data.index);
+            this.props.SetCard_ConceptIndex("order by index", this.props.data.index);
+        }
+        // May HYT
+        // need to show comments in the node's category
+        else if(this.props.data.group == 2){
+            //click same node twice will close panel
+            if(this.state.group2click == true && this.state.prev_node == this.props.data.index){
+                console.log("group2click:false")
+                this.setState({group2click:false});
+                this.setState({prev_node:null});
+                this.props.SetCardPanel(false, this.props.data.index);
+            }
+            
+            else{
+                console.log("group2click:going true")
+                this.setState({group2click:true});
+                this.setState({prev_node:this.props.data.index});
+                this.props.SetCardPanel(true, this.props.data.index);
+            }
+            
+            // this.props.SetCard_ConceptIndex("order by index", this.props.data.index);
+        }
 
     };
     handleClose() {
@@ -174,7 +198,9 @@ class Node extends Component {
         //added 
         //console.log("hover mode!!");
         this.setState({hovering:true});
+        //console.log("StartSetHoverConceptIndex")
         this.props.SetHoverConceptIndex(this.props.data.index);
+        console.log("StartSetHighlightNodes")
         this.props.SetHighlightNodes(this.props.data.index); 
         
         this.props.SetNodeHovering(true);

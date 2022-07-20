@@ -114,7 +114,6 @@ class ConceptDetailPanel extends Component {
                                 SetProgress = {this.props.SetProgress} 
                                 video_sequences={this.props.data.video_sequences[this.props.Path_ConceptIndex]}
                                 SetVideoId = {this.props.SetVideoId} 
-                                videoClick = {this.props.videoClick}
                             />
                         </g>
                         </div>

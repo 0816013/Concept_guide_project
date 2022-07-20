@@ -82,7 +82,6 @@ class Editor extends Component {
       this.handleResize = this.handleResize.bind(this);
       this.state = {
         content:this.props.content,
-        replyContent:this.props.replyContent,
         windowWidth:window.innerWidth,
         windowHeight:window.innerHeight,
       };
@@ -200,8 +199,7 @@ class Editor extends Component {
     var tmp = this;
     var userId = this.props.userId;
     var concept = this.props.searchInfo;
-    var commentId = this.props.editingcardID;
-    var parentId = "";
+    var cardId = this.props.editingCardId;
 
     var currentdate = new Date(); 
     var datetime = "Save Pressed: " + currentdate.getDate() + "/"
@@ -212,7 +210,7 @@ class Editor extends Component {
             + currentdate.getSeconds();
     console.log(datetime);
 
-    if((this.props.cardEditing==false) && (this.props.bool_reply==false)){ //new cardsaving
+    if(this.props.cardEditing==false){ //new cardsaving
       
       var sendBackEnd='http://0.0.0.0:5000/SaveEditor/';
       sendBackEnd = sendBackEnd+concept+"&"+userId+"&"+content;
@@ -228,12 +226,12 @@ class Editor extends Component {
       });
       //console.log(this.props);
       //this.props.SetMapConsult("add");
-      mydatabase.ref('/'+this.props.searchInfo).push({content,concept,userId,parentId});
+      mydatabase.ref('/'+this.props.searchInfo).push({content,concept,userId});
     }
-    else if((this.props.cardEditing==true) && (this.props.bool_reply==false)){ //card editing
+    else{ //cardediting
       
       var sendBackEnd='http://0.0.0.0:5000/SaveCard/';
-      sendBackEnd = sendBackEnd+concept+"&"+commentId+"&"+userId+"&"+content;
+      sendBackEnd = sendBackEnd+concept+"&"+cardId+"&"+userId+"&"+content;
       console.log("sendBackEnd = ", sendBackEnd);
       fetch(sendBackEnd)
       .then(function (res) {
@@ -244,28 +242,10 @@ class Editor extends Component {
         tmp.props.SetVisJson(myJson);
         return myJson;
     });     //跟後端連結去getJson
-      mydatabase.ref('/'+this.props.searchInfo).push({content,concept,userId,parentId});
       this.props.SetCardEdit(false,"");
     }
+    
 
-    else if((this.props.cardEditing==false) && (this.props.bool_reply==true)){ // card reply
-        parentId = this.props.parentId;
-        commentId = datetime;// the reply card can get a cardId
-        var sendBackEnd='http://0.0.0.0:5000/SaveCard/';
-        sendBackEnd = sendBackEnd+concept+"&"+commentId+"&"+userId+"&"+content;
-        console.log("sendBackEnd = ", sendBackEnd);
-        fetch(sendBackEnd)
-        .then(function (res) {
-          console.log(res);
-          return res.json();
-      }).then(function(myJson) {
-          //tmp.props.SetNewJson(myJson);
-          tmp.props.SetVisJson(myJson);
-          return myJson;
-      });     //跟後端連結去getJson
-        mydatabase.ref('/'+this.props.searchInfo).push({content,concept,userId,parentId,commentId});
-        this.props.SetCardEdit(false,"");
-    }
   }
 
     render() {
@@ -290,7 +270,7 @@ class Editor extends Component {
                     getSunEditorInstance={this.getSunEditorInstance}
                     onFocus = {this.onFocus}
                     onBlur = {this.onBlur}
-                    //SetMapConsult={this.props.SetMapConsult}
+                    SetMapConsult={this.props.SetMapConsult}
                      />
     </div>
       );

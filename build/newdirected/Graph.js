@@ -116,7 +116,7 @@ const updateGraph = (selection) => {
     var zoom = d3.zoom()
         .scaleExtent([0.6,2])
         .on('zoom', function(d) {
-            console.log("zoom",d3.event.transform.k,14/(d3.event.transform ?d3.event.transform.k : 1));
+            //console.log("zoom",d3.event.transform.k,14/(d3.event.transform ?d3.event.transform.k : 1));
             selection.select('g').attr("transform", d3.event.transform);
             selection.selectAll('text').style('font-size',14/(d3.event.transform ?d3.event.transform.k : 1));
             // selection.selectAll('.node').attr("fontSize",14/(d3.event.transform ? d3.event.transform : 1));
@@ -134,7 +134,7 @@ function CheckDirectNodes(index,BFSinput) {
             ans.push(parseInt(i));
         }
       }
-    console.log("CheckDirectNodes")
+    //console.log("CheckDirectNodes")
     return ans;
 }
 
@@ -229,7 +229,7 @@ class Graph extends Component {
     //   }
     SetHighlightNodes(index){
         var ans = CheckDirectNodes(index,this.props.data.BFSinput[index]);
-        // console.log("hhh",this.props.data.highlight_nodes[index]);
+        console.log("hhh",this.props.data.highlight_nodes[index]);
         
         this.setState(
             {
@@ -237,7 +237,9 @@ class Graph extends Component {
                 DirectNodes:ans
             }
         );
+        console.log("StartSetHighLightNodeAtIndex");
         this.props.SetHighlightNodesAtIndex(this.props.data.highlight_nodes[index]);
+        console.log("Start SetDirectNOdes....")
         this.props.SetDirectNodesAtIndex(ans);
     }
 /*     readFirebase()
@@ -260,9 +262,9 @@ class Graph extends Component {
     }
      */
     SetHighlightRelatedNodes(){
-        console.log('graph line263')
+        //console.log('graph line263')
         if (this.state.HighlightRelatedNodes != []){
-            console.log('graph line264');
+            //console.log('graph line264');
             this.setState(
             {
                 HighlightNodes:this.state.HighlightRelatedNodes
@@ -272,7 +274,7 @@ class Graph extends Component {
 
     render() {
         
-        console.log('graph line281',this.props.HighlightRelatedNodes)
+        //console.log('graph line281',this.props.HighlightRelatedNodes)
 
 
         var nodes = this.props.data.concept_relationship.nodes.map( (node) => {
@@ -361,6 +363,9 @@ class Graph extends Component {
                         //add card order, Nov JX
                         SetCard_ConceptIndex={this.props.SetCard_ConceptIndex}
                         HighlightRelatedNodes = {this.props.HighlightRelatedNodes}
+                        
+                        //add card panel, may HYT
+                        SetCardPanel = {this.props.SetCardPanel}
                     />)
                 
             }
@@ -390,7 +395,10 @@ class Graph extends Component {
                         SetHightlightWord={this.props.SetHightlightWord}
 
                         //add card order, Nov JX
-                            SetCard_ConceptIndex={this.props.SetCard_ConceptIndex}
+                        SetCard_ConceptIndex={this.props.SetCard_ConceptIndex}
+                        //add card panel, May HYT
+                        SetCardPanel={this.props.SetCardPanel}
+                        // Comment_ConceptIndex={this.props.Comment_ConceptIndex}
                     />
                     
                     );

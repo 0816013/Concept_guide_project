@@ -81,7 +81,7 @@ class RelatedVideosPanel extends Component {
         // this.handleClose = this.handleClose.bind(this);
         this.handleHover = this.handleHover.bind(this);
         this.handleHoverOut = this.handleHoverOut.bind(this);   
-        // this.videoClick = this.videoClick.bind(this);/* ************************************************** */
+        this.videoClick = this.videoClick.bind(this);
         this.YoutubeIconClick = this.YoutubeIconClick.bind(this);
         // this.CheckMarkerIndex = this.CheckMarkerIndex.bind(this);  
         this.RenderNumMarker = this.RenderNumMarker.bind(this);  
@@ -126,19 +126,19 @@ class RelatedVideosPanel extends Component {
         console.log("[hover],RelatedVideos",",",vid,",",index);
         this.props.SetHoverVideoIndex(vid);
     }
-    // videoClick(vid,index){
-    //     console.log("[click],RelatedVideos",",",vid,",",index);
-    //     var currentdate = new Date(); 
-    //     var datetime = "Video ID- " + vid + " Clicked: " + currentdate.getDate() + "/"
-    //             + (currentdate.getMonth()+1)  + "/" 
-    //             + currentdate.getFullYear() + " @ "  
-    //             + currentdate.getHours() + ":"  
-    //             + currentdate.getMinutes() + ":" 
-    //             + currentdate.getSeconds();
-    //     console.log(datetime);
-    //     this.props.SetVideoId(vid);
-    //     this.props.SetProgress(4);
-    // }
+    videoClick(vid,index){
+        console.log("[click],RelatedVideos",",",vid,",",index);
+        var currentdate = new Date(); 
+        var datetime = "Video ID- " + vid + " Clicked: " + currentdate.getDate() + "/"
+                + (currentdate.getMonth()+1)  + "/" 
+                + currentdate.getFullYear() + " @ "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes() + ":" 
+                + currentdate.getSeconds();
+        console.log(datetime);
+        this.props.SetVideoId(vid);
+        this.props.SetProgress(4);
+    }
     handleHoverOut(){
         this.props.SetHoverVideoIndex(null);
     }
@@ -260,7 +260,7 @@ class RelatedVideosPanel extends Component {
                                 style = {styles.circle} 
                                 onMouseOver={this.handleHover.bind(this,vid,index)}
                                 onMouseOut={this.handleHoverOut.bind(this)} 
-                                onClick={this.props.videoClick.bind(this,vid,index)}/****************************************/
+                                onClick={this.videoClick.bind(this,vid,index)}
                             >
                             </circle>
                         </a>

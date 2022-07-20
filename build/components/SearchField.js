@@ -77,7 +77,9 @@ class SearchField extends Component {
     componentWillMount(){
         // console.log("SearcgFieldMount");
         var tmp = this;
-        fetch('https://conceptdiscussion.herokuapp.com/SearchHistory/')
+        // heroku to local, apr HYT
+        // fetch('https://conceptdiscussion.herokuapp.com/SearchHistory/')
+        fetch('http://localhost:8001/SearchHistory/')
         .then(function (res) {
         //    console.log(res.json());
             return res.json();
@@ -98,7 +100,15 @@ class SearchField extends Component {
             console.log("here!!!!XXXXbitcoin")
             var tmp = this;
             var index = 0;
-            fetch('https://conceptdiscussion.herokuapp.com/GetJson_bitcoin/'+index)
+            // heroku to local, apr HYT
+            // fetch('https://conceptdiscussion.herokuapp.com/GetJson_bitcoin/'+index)
+            fetch('https://localhost:8001/GetJson_bitcoin/' + index, {
+                headers : { 
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                 }
+          
+              })
             .then(function (res) {
                 return res.json();
             }).then(function(myJson) {
@@ -108,7 +118,9 @@ class SearchField extends Component {
         }
         else{
             var tmp = this;
-            fetch('https://conceptdiscussion.herokuapp.com/GetAnalyzeResult/'+keyword)
+            // heroku to local, apr HYT
+            // fetch('https://conceptdiscussion.herokuapp.com/GetAnalyzeResult/'+keyword)
+            fetch('http://localhost:8001/GetAnalyzeResult/'+keyword)
             .then(function (res) {
                 return res.json();
             }).then(function(myJson) {
@@ -140,8 +152,11 @@ class SearchField extends Component {
     }
     TagClick(keyword){
         var tmp = this;
-        fetch('https://conceptdiscussion.herokuapp.com/GetAnalyzeResult/'+keyword)
+        // heroku to local, apr HYT
+        // fetch('https://conceptdiscussion.herokuapp.com/GetAnalyzeResult/'+keyword)
+        fetch('https://localhost:8001/GetAnalyzeResult/'+keyword)
         .then(function (res) {
+            // console.log("ppppppppppppppppp: ",res);
             return res.json();
         }).then(function(myJson) {
             // console.log("myJson",myJson.search_info);
@@ -152,7 +167,9 @@ class SearchField extends Component {
     TagDelete(keyword){
         // console.log("tag delete",this);
         var tmp = this;
-        fetch('https://conceptdiscussion.herokuapp.com/DeleteAnalyzeResult/'+keyword)
+        // heroku to local, apr HYT
+        // fetch('https://conceptdiscussion.herokuapp.com/DeleteAnalyzeResult/'+keyword)
+        fetch('http://localhost:8001/DeleteAnalyzeResult/'+keyword)
         .then(function (res) {
             return res.json();
         }).then(function(myJson) {

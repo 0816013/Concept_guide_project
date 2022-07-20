@@ -227,7 +227,6 @@ class App extends React.Component {
                             SetHoverConceptIndexAtIndex = {this.SetHoverConceptIndexAtIndex}
                             SetDirectNodesAtIndex = {this.SetDirectNodesAtIndex}
                             SetHighlightNodesAtIndex = {this.SetHighlightNodesAtIndex}
-                            //videoId = {this.state.videoId}/* ******************************************** */
                             //key={this.state.VisJson.concept_relationship.nodes}
           />
           <Dialog

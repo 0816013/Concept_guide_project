@@ -63,6 +63,18 @@ const styles = ({
         // margin:10,
         // padding:10
     },
+
+    hideVideo: {
+        position: 'absolute',
+        right:45,
+        top: 70
+    },
+    player: {
+        position: 'absolute',
+        left:20,
+        top: 115 
+    }
+
 });
 var SentRange = []
 var ConceptRange = []
@@ -82,7 +94,7 @@ class LearningMapFrame extends Component {
             newCardContent:false,
             MapConsult: false,
             cardEditing:false,
-            editingcardID:"",
+            editingCardId:"",
             editorContent:""
             };
         this.SetEditorContent = this.SetEditorContent.bind(this);
@@ -101,9 +113,9 @@ class LearningMapFrame extends Component {
     SetEditorContent(content){
         this.setState({editorContent:content});
     }
-    SetCardEdit(bool, videoId){
+    SetCardEdit(bool, cardId){
         this.setState({cardEditing:bool,
-                        editingcardID:videoId});
+                        editingCardId:cardId});
     }
     componentWillMount() {
         console.log("[graph]", ",", this.props.data.search_info.key);
@@ -243,7 +255,7 @@ class LearningMapFrame extends Component {
                     </Typography>
 
                     {/* <WordCloud videos_info={this.props.data.videos_info} HoverVideoIndex={this.state.HoverVideoIndex}/> */}
-                    <Graph data={this.props.data}
+                    {/* <Graph data={this.props.data}
                         HoverConceptIndex={this.props.HoverConceptIndexAtIndex}
                         SetHoverConceptIndex={this.SetHoverConceptIndex}
                         ClearHoverConcept = {this.ClearHoverConcept} 
@@ -268,27 +280,31 @@ class LearningMapFrame extends Component {
                         HighlightRelatedNodes = {[]}
                         //HighlightRelatedNodes_onoff = {this.state.HighlightRelatedNodes_onoff}
                         //
-                    />
-                    <Cards 
+                    /> */}
+                    {/* <Cards 
                             progress={"4"}
                             graphWidth={window.innerWidth/2 - 50}
                             SetEditorContent = {this.SetEditorContent}
                             newCardContent = {this.state.newCardContent}
                             searchInfo = {this.props.data.search_info.key}
                             SetCardEdit = {this.SetCardEdit}
-                            editingcardID = {this.state.editingcardID}
-                            cardEditing = {this.state.cardEditing}/>
+                            editingCardId = {this.state.editingCardId}
+                            cardEditing = {this.state.cardEditing}/> */}
                 </div>
                 
                 <div>
+                    <button style={styles.hideVideo} onClick={()=>this.props.SetProgress("3")}
+                            className="btn btn-primary btn-lg m-5">return to main page ✖</button>
                     <div width={window.innerWidth} height={window.innerHeight - 100}>
+                        
                         <ReactPlayer    url={"https://www.youtube.com/watch?v="+this.props.videoId}
                                         width={window.innerWidth/2 -50 }
                                         height={window.innerHeight/2 +100}
+                                        style={styles.player}
                                         controls = {true} />
                     </div>
                 
-                    <div>
+                    {/* <div>
                         <Editor content = {this.state.content}
                                 SetMapConsult = {this.SetMapConsult}
                                 SetNewJson = {this.props.SetNewJson}
@@ -297,12 +313,11 @@ class LearningMapFrame extends Component {
                                 SetCardEdit = {this.SetCardEdit}
                                 userId={this.props.userId}
                                 cardEditing = {this.state.cardEditing}
-                                editingcardID = {this.state.editingcardID}
+                                editingCardId = {this.state.editingCardId}
                                 editorContent={this.state.editorContent}
                         />
-                        <button onClick={()=>this.props.SetProgress("3")}
-                                className="btn btn-primary btn-lg m-5">Hide Video</button>
-                    </div>  
+                        
+                    </div>   */}
                 </div>
 
                 <ConceptDetailPanel

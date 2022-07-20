@@ -15,6 +15,8 @@ import MapApprovPanel from './MapApprovPanel';
 import Notification from './Notification';
 import Editor from './Editor'
 import Cards from './Cards'
+import Comments from './Comments'
+
 const styles = ({
     container: {
         // justifyContent: 'center',
@@ -65,21 +67,16 @@ class LearningMapFrame extends Component {
             newCardContent:false,
             MapConsult: false,
             cardEditing:false,
-            bool_reply:false,
-            editingcardID:"",
+            editingCardId:"",
             editorContent:"",
-            parentId:"",
-            cardReply:false,
-            replycardID:"",
-            replyContent:"",
-
 
             Card_ConceptIndex: null,
             HighlightRelatedNodes:[],
+
+            Card_Panel: false,
+            Comment_ConceptIndex: null,
             };
         this.SetEditorContent = this.SetEditorContent.bind(this);
-        this.SetParentId = this.SetParentId.bind(this);
-        this.SetReplyContent = this.SetReplyContent.bind(this);
         this.SetHoverConceptIndex = this.SetHoverConceptIndex.bind(this);
         this.SetMapConsult = this.SetMapConsult.bind(this);
         this.SetNewCardContent = this.SetNewCardContent.bind(this);
@@ -91,47 +88,22 @@ class LearningMapFrame extends Component {
         // Adding words hightlighting functions by YHT
         this.SetHightlightWord = this.SetHightlightWord.bind(this);
         this.SetCardEdit = this.SetCardEdit.bind(this);
-        this.SetCardReply = this.SetCardReply.bind(this);
-        this.videoClick = this.videoClick.bind(this);
 
         //Add card order, Nov JX
         this.SetCard_ConceptIndex = this.SetCard_ConceptIndex.bind(this);
         this.SetHighlightRelatedNodes = this.SetHighlightRelatedNodes.bind(this);
+
+        //Add card panel, May HYT
+        this.SetCardPanel = this.SetCardPanel.bind(this);
+    
     }
     SetEditorContent(content){
         this.setState({editorContent:content});
     }
-    SetParentId(parentId){
-        this.setState({parentId:parentId});
+    SetCardEdit(bool, cardId){
+        this.setState({cardEditing:bool,
+                        editingCardId:cardId});
     }
-    SetCardEdit(bool, bool_reply ,commentId){
-        this.setState({cardEditing:bool,// for editing
-                        bool_reply:bool_reply,// for replying
-                        editingcardID:commentId});// cardId
-    }
-
-    SetReplyContent(replyContent){
-        this.setState({replyContent:replyContent});
-    }
-    SetCardReply(bool, commentId){
-        this.setState({cardReply:bool,
-                        replycardID:commentId});
-    }
-
-    videoClick(vid,index){//moved from RelatedVideoPanel
-        console.log("[click],RelatedVideos",",",vid,",",index);
-        var currentdate = new Date(); 
-        var datetime = "Video ID- " + vid + " Clicked: " + currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + " @ "  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
-        console.log(datetime);
-        this.props.SetVideoId(vid);
-        this.props.SetProgress(4);
-    }
-
     componentWillMount() {
         console.log("[graph]", ",", this.props.data.search_info.key);
         // console.log("cheeeee",this.props.data.concept_relationship.nodes);
@@ -151,10 +123,10 @@ class LearningMapFrame extends Component {
         ConceptRange = [Math.min(...tmpList2), Math.max(...tmpList2), tmpList2.reduce((a, b) => a + b, 0)];
     }
     SetHoverConceptIndex(i, word) {
-        // console.log("[hover] conceptMapNode",i);
+        console.log("[hover] conceptMapNode",i);
         // Adding concept panel words highlighting
-        console.log("word = ", word);
-        console.log("i = ",i);
+        //console.log("word = ", word);
+        //console.log("i = ",i);
         this.setState({
             HoverConceptIndex: i,
             HightlightWord: word
@@ -240,12 +212,11 @@ class LearningMapFrame extends Component {
     SetHighlightRelatedNodes(relatednodes_list){
         
         this.setState({HighlightRelatedNodes: relatednodes_list})
-        console.log('line204 learningmapframe', relatednodes_list)
-        
+        //console.log('line204 learningmapframe', relatednodes_list)
+        console.log("SetHighlightRelatedNodes")
 
 
     }
-
     SetMapConsult(method){
         if (method == "add"){
             /*     正式的讓後端去取db資料，算出新的Json檔
@@ -281,10 +252,18 @@ class LearningMapFrame extends Component {
             console.log("prevConceptIndex = ",prevState.HoverConceptIndex," >>> ", this.state.HoverConceptIndex);
         }
     }
-
+    //May HYT
+    SetCardPanel(click_group2, node_ind){
+        this.setState({
+            Card_Panel: click_group2,
+            Comment_ConceptIndex: node_ind
+        });
+        console.log("SetCardPanel", this.state.Card_Panel)
+    }
     render() {
         //console.log(this.props.data.VideoSequence_ConceptInfo);
         var HighlightConceptTextIndex = this.state.HoverVideoIndex == null ? [] : this.props.data.VideoSequence_ConceptInfo[this.state.HoverConceptIndex][this.state.HoverVideoIndex];
+        console.log("HighlightNodes",this.state.HoverConceptIndex, " ", this.state.HoverVideoIndex);
         // console.log("windowheight",window.innerHeight);
         //console.log ('data in learningmapframe line240', this.props.data);
         return (
@@ -326,31 +305,42 @@ class LearningMapFrame extends Component {
                         HighlightRelatedNodes = {this.state.HighlightRelatedNodes}
                         HighlightRelatedNodes_onoff = {this.state.HighlightRelatedNodes_onoff}
                         //key={this.state.HighlightRelatedNodes}
+                        
+                        // may HYT
+                        SetCardPanel = {this.SetCardPanel}
+                        // Comment_ConceptIndex = {this.state.Comment_ConceptIndex}
                     />
                 </div>
-                
+                {/* <h1>hello h1</h1> */}
                 <div>
-                    <div>
+                    {/* <div>
                     <Cards 
+                            data={this.props.data}
                             SetEditorContent = {this.SetEditorContent}
-                            SetParentId = {this.SetParentId}
-                            SetReplyContent = {this.SetReplyContent}
                             newCardContent = {this.state.newCardContent}
                             searchInfo = {this.props.data.search_info.key}
                             SetCardEdit = {this.SetCardEdit}
-                            editingcardID = {this.state.editingcardID}
+                            editingCardId = {this.state.editingCardId}
                             cardEditing = {this.state.cardEditing}
-                            SetCardReply = {this.state.SetCardReply}
-                            replycardID = {this.state.replycardID}
-                            cardReply = {this.state.cardReply}
                             Card_ConceptIndex={this.state.Card_ConceptIndex}
                             SetHighlightRelatedNodes = {this.SetHighlightRelatedNodes}
                             key={this.state.Card_ConceptIndex}
-                            videoClick = {this.videoClick}
-                            videoId = {this.props.videoId}
-                            />
+                            Comment_ConceptIndex={this.state.Comment_ConceptIndex}
+                            // may HYT
+                            SetCardPanel = {this.SetCardPanel}
+                            Card_Panel = {this.state.Card_Panel}
+                            
+                    />
+                    </div> */}
+                    <div>
+                        <Comments
+                            searchInfo = {this.props.data.search_info.key}
+                            Card_ConceptIndex = {this.state.Card_ConceptIndex}
+                            highlight_nodes = {this.props.data.highlight_nodes}
+                        />
                     </div>
-                    <div style = {styles.Editor}>
+                    
+                    {/* <div style = {styles.Editor}>
                     <Editor content = {this.state.content}
                             userId={this.props.userId}
                             SetMapConsult = {this.SetMapConsult}
@@ -359,20 +349,13 @@ class LearningMapFrame extends Component {
                             SetNewCardContent = {this.SetNewCardContent}
                             SetCardEdit = {this.SetCardEdit}
                             cardEditing = {this.state.cardEditing}
-                            bool_reply = {this.state.bool_reply}
-                            editingcardID = {this.state.editingcardID}
+                            editingCardId = {this.state.editingCardId}
                             editorContent={this.state.editorContent}
-                            
-                            parentId={this.state.parentId}
-                            SetCardReply={this.state.SetCardReply}
-                            cardReply={this.state.cardReply}
-                            replycardID={this.state.replycardID}
-                            replyContent={this.state.replyContent}
                             SetVisJson = {this.props.SetVisJson}
-                    />
+                    /> */}
                     {/*<button onClick={()=>this.SetMapConsult("add")}
                             className="btn btn-primary btn-lg m-5">Show New Map</button>*/}
-                    </div>  
+                    {/* </div>   */}
                 </div>
 
                 <ConceptDetailPanel
@@ -391,7 +374,8 @@ class LearningMapFrame extends Component {
                     SetVideoId = {this.props.SetVideoId} 
 
                     SetCard_ConceptIndex={this.SetCard_ConceptIndex}
-                    videoClick = {this.videoClick}
+                    // may HYT
+                    SetCardPanel = {this.SetCardPanel}
                 />
                 <MapApprovPanel 
                     data={this.props.data}

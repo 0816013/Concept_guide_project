@@ -3,7 +3,12 @@ import React, { Component } from 'react';
 import SunEditor from 'suneditor-react';
 import Card from './Card'
 import RelatedVideosPanel from './RelatedVideosPanel';
-
+import { withStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Input from '@material-ui/core/Input';
+import Search from '@material-ui/icons/Search';
+import Button from '@material-ui/core/Button';
 
 //Start Connect to database----------
 if (!firebase.apps.length) {
@@ -44,11 +49,11 @@ console.log("db = ", db);
 //                 var cards = [];
 //                 var i =0;
 //                 while(i<keys.length){
-//                     var videoId = keys[i];
-//                     var cardContent = tmp.state.cards[videoId].cardContent;
-//                     var likes = tmp.state.cards[videoId].likes;
-//                     var userId = tmp.state.cards[videoId].userId;
-//                     var card = {videoId:videoId, cardContent:cardContent, userId: userId, likes:likes };
+//                     var cardId = keys[i];
+//                     var cardContent = tmp.state.cards[cardId].cardContent;
+//                     var likes = tmp.state.cards[cardId].likes;
+//                     var userId = tmp.state.cards[cardId].userId;
+//                     var card = {cardId:cardId, cardContent:cardContent, userId: userId, likes:likes };
 //                     cards.push(card);
 //                     i = i+1;
 //                 }
@@ -76,18 +81,41 @@ class Cards extends Component {
         this.state={
             cards: [
             ],
+            // to_left: [
+            // ],
             concept:this.props.searchInfo,
             windowWidth:window.innerWidth,
             windowHeight:window.innerHeight,
             Card_ConceptIndex: this.props.Card_ConceptIndex,
-            // parentId:"",
+
         };
+
+        var tmp = this;
+        // heroku to local, apr HYT
+        // fetch('https://appbackend-hci.herokuapp.com/GetJson_bitcoin/'+index)
+
+
+        // fetch('http://localhost:8001/GetJson_covid/'+index, {
+        //     headers : { 
+        //       'Content-Type': 'application/json',
+        //       'Accept': 'application/json'
+        //      }
+      
+        //   })
+        // .then(function (res) {
+        //     return res.json();
+        // }).then(function(myJson) {////////////////////////////
+        //     console.log("myJson",myJson.search_info);
+        //     tmp.props.SetMenuClose();
+        //     tmp.props.SetProgress(3,myJson);
+        //     //tmp.props.SetNewJson(myJson);
+        //     return myJson;/////////////////////////////////////
+        // });
+
         this.handleDelete=this.handleDelete.bind(this);
         this.handleEdit=this.handleEdit.bind(this);      
-        this.addCard=this.addCard.bind(this);  
-        // this.addCardReply=this.addCardReply(this);////////////////////////////////////////////////////////// 
+        this.addCard=this.addCard.bind(this);   
         this.handleThumbsCnt=this.handleThumbsCnt.bind(this);
-        // this.handleParent=this.handleParent.bind(this);////////////////////////////////////////////////////////
         this.handleResize = this.handleResize.bind(this);
         this.handleNodeHighlight = this.handleNodeHighlight.bind(this);
 
@@ -110,12 +138,12 @@ class Cards extends Component {
                 var cards = [];
                 var i =0;
                 while(i<keys.length){
-                    var videoId = keys[i];
-                    var cardContent = cardscontent[videoId].cardContent;
-                    var likes = cardscontent[videoId].likes;
-                    var userId = cardscontent[videoId].userId;
-                    var higlightnodes = cardscontent[videoId].highlight_nodes_post;
-                    var card = {videoId:videoId, cardContent:cardContent, userId: userId, likes:likes, higlightnodes:higlightnodes};
+                    var cardId = keys[i];
+                    var cardContent = cardscontent[cardId].cardContent;
+                    var likes = cardscontent[cardId].likes;
+                    var userId = cardscontent[cardId].userId;
+                    var higlightnodes = cardscontent[cardId].highlight_nodes_post;
+                    var card = {cardId:cardId, cardContent:cardContent, userId: userId, likes:likes, higlightnodes:higlightnodes};
 
                     cards.push(card);
                     i = i+1;
@@ -130,12 +158,12 @@ class Cards extends Component {
                 var cards = [];
                 var i =0;
                 while(i<keys.length){
-                    var videoId = keys[i];
-                    var cardContent = cardscontent[videoId].cardContent;
-                    var likes = cardscontent[videoId].likes;
-                    var userId = cardscontent[videoId].userId;
-                    var higlightnodes = cardscontent[videoId].highlight_nodes_post;
-                    var card = {videoId:videoId, cardContent:cardContent, userId: userId, likes:likes, higlightnodes:higlightnodes};
+                    var cardId = keys[i];
+                    var cardContent = cardscontent[cardId].cardContent;
+                    var likes = cardscontent[cardId].likes;
+                    var userId = cardscontent[cardId].userId;
+                    var higlightnodes = cardscontent[cardId].highlight_nodes_post;
+                    var card = {cardId:cardId, cardContent:cardContent, userId: userId, likes:likes, higlightnodes:higlightnodes};
 
                     cards.push(card);
                     i = i+1;
@@ -174,25 +202,20 @@ class Cards extends Component {
         cards.push({id:cards.length+1, content: content, thumbsCnt: 0});
         this.setState({cards});
     }
-    // addCardReply(replyContent, parent){///////////////////////////////////////////////////////////////////////////////////////////
-    //     let cards = this.state.cards;
-    //     cards.push({id:cards.length+1, content: replyContent, parent:parent});
-    //     this.setState({cards});
-    // }
-    handleDelete(commentId) {
-        var sendBackEnd='http://0.0.0.0:5000/DeleteCard/'+this.state.concept+"&"+commentId;
+    handleDelete(cardId) {
+        var sendBackEnd='http://0.0.0.0:5000/DeleteCard/'+this.state.concept+"&"+cardId;
         console.log("handleDelete = ",sendBackEnd);
         fetch(sendBackEnd);
     }
-    handleEdit(commentId) {
-        console.log("handleEdit",commentId);
+    handleEdit(cardId) {
+        console.log("handleEdit",cardId);
 
     }
-    handleSave(commentId){
-        console.log("handleSave", commentId);
+    handleSave(cardId){
+        console.log("handleSave", cardId);
     }
-    handleThumbsCnt(commentId,method){
-        // var card = this.state.cards.filter(c=>c.id==videoId);
+    handleThumbsCnt(cardId,method){
+        // var card = this.state.cards.filter(c=>c.id==cardId);
         // if(method=="add"){
         //     card[0].thumbsCnt=card[0].thumbsCnt+1;
         // }
@@ -200,11 +223,11 @@ class Cards extends Component {
         //     card[0].thumbsCnt=card[0].thumbsCnt-1;
         // }
         //console.log("card = ", card);
-        //console.log("this.state.cards.filter = ",this.state.cards.filter(c=>c.id!==videoId));
-        //var cards =card.concat( this.state.cards.filter(c=>c.id!==videoId));
+        //console.log("this.state.cards.filter = ",this.state.cards.filter(c=>c.id!==cardId));
+        //var cards =card.concat( this.state.cards.filter(c=>c.id!==cardId));
         //console.log("cards = ", cards);
         
-        var sendBackEnd='http://0.0.0.0:5000/LikeCard/'+this.state.concept+"&"+commentId+'&'+method;
+        var sendBackEnd='http://0.0.0.0:5000/LikeCard/'+this.state.concept+"&"+cardId+'&'+method;
         fetch(sendBackEnd);
 
         // cards.sort(function(a, b){
@@ -212,10 +235,6 @@ class Cards extends Component {
         // });
         // this.setState({cards});
     }
-    // handleParent(parentId){/////////////////////////////////////////////////////////////////////////////////////////////////////
-    //     console.log("handleParent(parentId):",parentId);
-    //     this.setState({parentId: parentId});
-    // }
     // componentDidUpdate(prevState){
         
     //     if(this.state.Card_ConceptIndex != prevState.state.Card_ConceptIndex){
@@ -237,11 +256,11 @@ class Cards extends Component {
     //                 var cards = [];
     //                 var i =0;
     //                 while(i<keys.length){
-    //                     var videoId = keys[i];
-    //                     var cardContent = cardscontent[videoId].cardContent;
-    //                     var likes = cardscontent[videoId].likes;
-    //                     var userId = cardscontent[videoId].userId;
-    //                     var card = {videoId:videoId, cardContent:cardContent, userId: userId, likes:likes };
+    //                     var cardId = keys[i];
+    //                     var cardContent = cardscontent[cardId].cardContent;
+    //                     var likes = cardscontent[cardId].likes;
+    //                     var userId = cardscontent[cardId].userId;
+    //                     var card = {cardId:cardId, cardContent:cardContent, userId: userId, likes:likes };
     //                     cards.push(card);
     //                     i = i+1;
     //                 }
@@ -254,11 +273,11 @@ class Cards extends Component {
     //                 var cards = [];
     //                 var i =0;
     //                 while(i<keys.length){
-    //                     var videoId = keys[i];
-    //                     var cardContent = cardscontent[videoId].cardContent;
-    //                     var likes = cardscontent[videoId].likes;
-    //                     var userId = cardscontent[videoId].userId;
-    //                     var card = {videoId:videoId, cardContent:cardContent, userId: userId, likes:likes };
+    //                     var cardId = keys[i];
+    //                     var cardContent = cardscontent[cardId].cardContent;
+    //                     var likes = cardscontent[cardId].likes;
+    //                     var userId = cardscontent[cardId].userId;
+    //                     var card = {cardId:cardId, cardContent:cardContent, userId: userId, likes:likes };
     //                     cards.push(card);
     //                     i = i+1;
     //                 }
@@ -276,27 +295,34 @@ class Cards extends Component {
         var concept = this.state.concept;
         var path = "/"+concept;
         var tmp = this;
+        // var tmp_cards = {};
+        // var tmp_to_left = [];
         db.ref(path).once('value', function(snapshot){
             tmp.setState({cards:snapshot.val()});
-            console.log(snapshot.val());
-            console.log(typeof(tmp.state.cards));
+            // tmp_cards = Object.values(snapshot.val());
+            // for(var i = 0; i < Object.values(snapshot.val()).length; ++i){
+            //     if(tmp_cards[i]["parentId"] != '0' && tmp_cards[i]["sentiment"] === 'Q&A'){
+            //         tmp_to_left.push(1);
+            //     }
+            //     else{
+            //         tmp_to_left.push(0);
+            //     }
+            // }
+            // tmp.setState({to_left:tmp_to_left});
             });
         var properties = Object.getOwnPropertyNames(this.state.cards);
         console.log("properties", properties);
         db.ref(path).on('value', function(snapshot){
             tmp.setState({cards:snapshot.val()});
             });
-        // this.setState({cards:Object.values(this.state.cards)});
-        // cards.setState Object.values(this.state.cards);
-        //console.log(typeof(this.state.cards));
     }
-    handleNodeHighlight(commentId){
+    handleNodeHighlight(cardId){
         var data = this.state.cards
         var highlightnodes_selected = []
         for (var i = 0; i < data.length; i++) { 
-            if (data[i]['commentId'] == commentId){
+            if (data[i]['cardId'] == cardId){
                 highlightnodes_selected = data[i]['higlightnodes']
-                console.log(data[i]['higlightnodes']) 
+                // console.log(data[i]['higlightnodes']) 
                 //this.props.setState({HighlightRelatedNodes: highlightnodes_selected })
             }
         }
@@ -311,8 +337,6 @@ class Cards extends Component {
         };
         if (this.state!== prevState) {
             console.log("this.state = ", this.state);
-            // this.setState({cards:Object.values(this.state.cards)});
-            // var cards = Object.values(this.state.cards);
         }
       }
     // card by index, Nov JX
@@ -321,12 +345,21 @@ class Cards extends Component {
         var tmp = this;
         var styles={};
         if (this.props.progress=="4"){
+            // console.log("progress==4");
             styles = ({
                 ul: {
                     //overflowX: "scroll",
                     overflowY: "scroll",
                     width:tmp.props.graphWidth,
                     height:(tmp.state.windowHeight/2-100)
+                }, 
+                paper2: {
+                    width: tmp.state.windowWidth/2.012,
+                    // height: 850,
+                    overflowX: "hidden",
+                    overflowY: "scroll",
+                    padding: 15,
+                    margin : 15,
                 }
             });
         }else{
@@ -334,102 +367,121 @@ class Cards extends Component {
                 ul: {
                     //overflowX: "scroll",
                     overflowY: "scroll",
+                    // may LCY
                     width:tmp.state.windowWidth/2.012,
                     height:(tmp.state.windowHeight/3)+(tmp.state.windowHeight/3)
+                }, 
+                paper2: {
+                    width: tmp.state.windowWidth/2.012,
+                    // height: 850,
+                    overflowX: "hidden",
+                    overflowY: "scroll",
+                    padding: 15
                 }
             });
         };
-
-        var cards = Object.values(this.state.cards);
-
-        // Array.prototype.swapItems = function(a, b){
-        //     this[a] = this.splice(b, 1, this[a])[0];
-        //     return this;
-        // }
-        var swapArrayElements = function(arr, indexA, indexB) {
-            var temp = arr[indexA];
-            arr[indexA] = arr[indexB];
-            arr[indexB] = temp;
-        };
-        
-        //traverse cards
-        for(let i=0;i<Object.keys(this.state.cards).length;i++){
-            var key = Object.keys(cards)[i];
-            // console.log("key:",key);
-            // console.log("cards.indexOf(cards[i])",cards.indexOf(cards[i]));
-            
-            if(cards[key]==undefined || cards[key]['content']==undefined || cards[key]['parentId']==undefined){
-                cards.splice(key, 1);
-            }
-            else if((cards[key]["parentId"]=="") || (cards[key]["parentId"]==undefined) || (cards[key]["parentId"]=="0")){// no parent
-                // console.log("no parent,",cards[key]["parentId"], "videoId:",cards[key]["videoId"]);
-            }
-            else if((cards[key]["parentId"]!="0") || (cards[key]["parentId"]!=undefined)){// have parent
-                // console.log("have parent,",cards[key]["parentId"], "videoId:",cards[key]["videoId"]);
-                var childIndex = cards.indexOf(cards[i]);
-                var parentIndex = Number(cards[key]["parentId"])+1;
-                // var parentIndex = cards.indexOf(cards[key]);
-                // console.log("childIndex:", childIndex);
-                // console.log("parentIndex:", typeof(parentIndex));
-                // console.log("parentIndex+1:", parentIndex+1);
-                console.log("cards[key]", cards[key]);
-
-                swapArrayElements(cards, childIndex, parentIndex);
-                // alert(cards.swapItems(childIndex, parentIndex));
-            }
-        }
-        // console.log("Object.keys(cards)[0]:",Object.keys(cards)[0]);
-        // for(let i=0;i<Object.keys(this.state.cards).length;i++){
-        //     var uniqueKey = Object.keys(cards)[i];
-        //     cards[uniqueKey]["videoId"] = uniqueKey;
-        // }
-
-        // if the card in cards have parent, modify the sequence
-        // console.log("cards[0]:",this.state.cards["0"]);
-        // console.log("cards id:",Object.keys(cards));
-        
-
-        // console.log("cards = ", this.state.cards);
+        // var cards = Object.values(this.state.cards);
         //this.setState(cards);
-        //console.log(cards);
-        console.log('card = ', cards);
-        if((cards!=null)&&(cards!=[])){
-            
-            return (
-                <div className="relative" style={styles.ul}> 
-                    {cards.map
-                    (card => card &&
-                        (<Card content={card.content}
-                                replyContent={card.replyContent}
-                                parentId={card.parentId}
-                                key = {card.commentId}
-                                commentId = {card.commentId}
-                                userId = {card.userId}
-                                onDelete={this.handleDelete}
-                                onEdit={this.handleEdit} 
-                                onSave={this.handleSave}
-                                handleThumbsCnt={this.handleThumbsCnt}
-                                thumbsCnt={card.likes}
-                                SetCardEdit={this.props.SetCardEdit}
-                                concept = {this.state.concept}
-                                SetEditorContent = {this.props.SetEditorContent}
-                                SetParentId = {this.props.SetParentId}
-                                cardEditing = {this.props.cardEditing}
-                                editingcardID = {this.props.editingcardID}
-
-                                SetCardReply={this.props.SetCardReply}
-                                SetReplyContent = {this.props.SetReplyContent}
-                                cardReply = {this.props.cardReply}
-                                replycardID = {this.props.replycardID}
-                                videoClick = {this.props.videoClick}
-                                videoId = {card.videoId}
-                                // handleParent = {this.handleParent}
-                                
-                                handleNodeHighlight = {this.handleNodeHighlight}
-                                style = {styles}/>
-                        ))}
+        
+        
+        if((this.state.cards!=null)&&(this.state.cards!=[])){
+            var cards = Object.values(this.state.cards);
+            // May HYT
+            // if(this.props.data.concept_relationship.nodes[this.props.Comment_ConceptIndex] != undefined){
+            // console.log("parentid: ",this.props.data.concept_relationship.nodes[this.props.Comment_ConceptIndex]);
+                // }
+            // for(var i = 0; i < (cards).length; ++i){
+            // console.log("ffffffffffffffffffff", this.state.to_left);
+            // }
+            if(this.props.Card_Panel==true){
+                let panel_cards = [];
+                for (var i = 0; i < Object.keys(this.props.data.concept_relationship.nodes[this.props.Comment_ConceptIndex].comment_id).length; ++i) {
+                    if(this.props.data.concept_relationship.nodes[this.props.Comment_ConceptIndex].comment_id[i] === 1){
+                        if(this.state.cards[i]=== undefined) continue;
+                        panel_cards.push(this.state.cards[i]);
+                        // console.log(i, this.state.cards[i]);
+                    }
+                }
+                // console.log("uppppppppp");
+                return(
+                    <div style = {styles.OuterContainer}>
+                        {/* <Paper style={styles.paper2} elevation={13}> */}
+                        <Paper style= {Object.assign({}, styles.paper2, {height:window.innerHeight-130})} elevation={13}>
+                            <div  className="relative" style={styles.ul}>
+                                {panel_cards.map(card =>
+                                    (<Card content={card.content}
+                                            key = {card.cardId}
+                                            cardId = {card.cardId}
+                                            userId = {card.userId}
+                                            // parentId = {card.parentId}
+                                            onDelete={this.handleDelete}
+                                            onEdit={this.handleEdit} 
+                                            onSave={this.handleSave}
+                                            handleThumbsCnt={this.handleThumbsCnt}
+                                            thumbsCnt={card.likes}
+                                            SetCardEdit={this.props.SetCardEdit}
+                                            concept = {this.state.concept}
+                                            SetEditorContent = {this.props.SetEditorContent}
+                                            cardEditing = {this.props.cardEditing}
+                                            editingCardId = {this.props.editingCardId}
+                                            handleNodeHighlight = {this.handleNodeHighlight}
+                                            style = {styles}/>
+                                    ))}
+                            </div>
+                        </Paper>  
+                        {/* orignal cards */}
+                        <div className="relative" style={styles.ul}> 
+                            {cards.map(card =>
+                                (<Card content={card.content}
+                                        key = {card.cardId}
+                                        cardId = {card.cardId}
+                                        userId = {card.userId}
+                                        // parentId = {card.parentId}
+                                        onDelete={this.handleDelete}
+                                        onEdit={this.handleEdit} 
+                                        onSave={this.handleSave}
+                                        handleThumbsCnt={this.handleThumbsCnt}
+                                        thumbsCnt={card.likes}
+                                        SetCardEdit={this.props.SetCardEdit}
+                                        concept = {this.state.concept}
+                                        SetEditorContent = {this.props.SetEditorContent}
+                                        cardEditing = {this.props.cardEditing}
+                                        editingCardId = {this.props.editingCardId}
+                                        handleNodeHighlight = {this.handleNodeHighlight}
+                                        style = {styles}/>
+                                ))}
+                        </div>
                     </div>
-            );
+                    
+                );
+            }
+            else{
+                
+                // console.log("downnnnnnnnnnnnnn");
+                return (
+                    <div className="relative" style={styles.ul}> 
+                        {cards.map(card =>
+                            (<Card content={card.content}
+                                    key = {card.cardId}
+                                    cardId = {card.cardId}
+                                    userId = {card.userId}
+                                    // parentId = {card.parentId}
+                                    onDelete={this.handleDelete}
+                                    onEdit={this.handleEdit} 
+                                    onSave={this.handleSave}
+                                    handleThumbsCnt={this.handleThumbsCnt}
+                                    thumbsCnt={card.likes}
+                                    SetCardEdit={this.props.SetCardEdit}
+                                    concept = {this.state.concept}
+                                    SetEditorContent = {this.props.SetEditorContent}
+                                    cardEditing = {this.props.cardEditing}
+                                    editingCardId = {this.props.editingCardId}
+                                    handleNodeHighlight = {this.handleNodeHighlight}
+                                    style = {styles}/>
+                            ))}
+                        </div>
+                );
+            }
         } else {
             return null;
         }
