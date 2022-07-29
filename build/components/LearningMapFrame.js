@@ -334,6 +334,7 @@ class LearningMapFrame extends Component {
                     </div> */}
                     <div>
                         <Comments
+                            progress={"3"}
                             searchInfo = {this.props.data.search_info.key}
                             Card_ConceptIndex = {this.state.Card_ConceptIndex}
                             highlight_nodes = {this.props.data.highlight_nodes}

@@ -17,6 +17,7 @@ import Editor from './Editor';
 import Cards from './Cards';
 import './video.css';
 import YoutubeEmbed from './YoutubeEmbed';
+import VideoComments from './VideoComments';
 
 import ReactPlayer from "react-player"
 
@@ -66,8 +67,8 @@ const styles = ({
 
     hideVideo: {
         position: 'absolute',
-        right:45,
-        top: 70
+        right:15,
+        top: 65,
     },
     player: {
         position: 'absolute',
@@ -253,7 +254,7 @@ class LearningMapFrame extends Component {
                     <Typography variant="headline" component="h5">
                         {this.props.data.search_info.key}
                     </Typography>
-
+            
                     {/* <WordCloud videos_info={this.props.data.videos_info} HoverVideoIndex={this.state.HoverVideoIndex}/> */}
                     {/* <Graph data={this.props.data}
                         HoverConceptIndex={this.props.HoverConceptIndexAtIndex}
@@ -296,14 +297,14 @@ class LearningMapFrame extends Component {
                     <button style={styles.hideVideo} onClick={()=>this.props.SetProgress("3")}
                             className="btn btn-primary btn-lg m-5">return to main page ✖</button>
                     <div width={window.innerWidth} height={window.innerHeight - 100}>
-                        
+           
                         <ReactPlayer    url={"https://www.youtube.com/watch?v="+this.props.videoId}
                                         width={window.innerWidth/2 -50 }
                                         height={window.innerHeight/2 +100}
                                         style={styles.player}
                                         controls = {true} />
                     </div>
-                
+                    
                     {/* <div>
                         <Editor content = {this.state.content}
                                 SetMapConsult = {this.SetMapConsult}
@@ -320,6 +321,14 @@ class LearningMapFrame extends Component {
                     </div>   */}
                 </div>
 
+                <VideoComments
+                    data={this.props.data}
+                    videoId={this.props.videoId}
+                    // searchInfo = {this.props.data.search_info.key}
+                    // Card_ConceptIndex = {this.state.Card_ConceptIndex}
+                    // highlight_nodes = {this.props.data.highlight_nodes}
+                    progress={"4"}
+                />
                 <ConceptDetailPanel
                     data={this.props.data}
                     Path_ConceptIndex={this.state.Path_ConceptIndex}
@@ -335,6 +344,7 @@ class LearningMapFrame extends Component {
                     SetNewCardContent = {this.SetNewCardContent}
                     SetVideoId = {this.props.SetVideoId} 
                 />
+
                 <MapApprovPanel 
                     data={this.props.data}
                     MapConsult={this.state.MapConsult}
@@ -343,6 +353,7 @@ class LearningMapFrame extends Component {
                     SetNewJson = {this.props.SetNewJson}   
                     NewJson = {this.props.NewJson}
                 />
+
                 {/*<Notification open={this.state.Path_ConceptIndex == null} />*/}
             </div>
 

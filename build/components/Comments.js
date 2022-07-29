@@ -1,4 +1,10 @@
 import React, { Component } from 'react';
+import Paper from '@material-ui/core/Paper';
+import Comment from './Comment';
+
+// progress = 3
+// trends
+// topic, video photo, rank, comments, username
 
 class Comments extends Component {
     constructor(props){
@@ -31,59 +37,49 @@ class Comments extends Component {
     render(){
         var tmp = this;
         var styles={};
-        if (this.props.progress=="4"){
-            console.log("progress==4");
-            console.log("concept", this.state.concept);
-            styles = ({
-                ul: {
-                    //overflowX: "scroll",
-                    overflowY: "scroll",
-                    width:tmp.props.graphWidth,
-                    height:(tmp.state.windowHeight/2-100)
-                }, 
-                paper2: {
-                    width: tmp.state.windowWidth/2.012,
-                    // height: 850,
-                    overflowX: "hidden",
-                    overflowY: "scroll",
-                    padding: 15,
-                    margin : 15,
-                }
-            });
+        
+        styles = ({
+            ul: {
+                //overflowX: "scroll",
+                overflowY: "scroll",
+                // may LCY
+                width:tmp.state.windowWidth/2.1,
+                height:(tmp.state.windowHeight/3)+(tmp.state.windowHeight/3)
+            }, 
+            paper2: {
+                width: tmp.state.windowWidth/2.1,
+                // height: 850,
+                overflowX: "hidden",
+                overflowY: "scroll",
+                padding: 15,
+                margin : 15,
+                position: 'absolute',
+                right: 0,
+            }
+        });
+
+        if(this.props.progress==3){
+            return(
+                <Comment/>
+                // <div>
+                //     <Paper style={styles.paper2} elevation={3}>
+                //         <h1>hello h1 comment</h1>
+                //     </Paper>
+                //     {/* <div>
+
+                //         {this.state.concept}
+                //     </div>   */}
+                //     {/* <div>
+                //         {this.state.highlight_nodes}
+                //     </div>            */}                  
+                // </div>
+
+            );            
         }
         else{
-            console.log("progress==else");
-            console.log("concept", this.state.concept);
-            styles = ({
-                ul: {
-                    //overflowX: "scroll",
-                    overflowY: "scroll",
-                    // may LCY
-                    width:tmp.state.windowWidth/2.012,
-                    height:(tmp.state.windowHeight/3)+(tmp.state.windowHeight/3)
-                }, 
-                paper2: {
-                    width: tmp.state.windowWidth/2.012,
-                    // height: 850,
-                    overflowX: "hidden",
-                    overflowY: "scroll",
-                    padding: 15
-                }
-            });
-        };
+            return null;
+        }
 
-        return(
-            // <h1>hello h1</h1>
-            <div>
-                <div>
-                    {/* {this.state.concept} */}
-                </div>  
-                {/* <div>
-                    {this.state.highlight_nodes}
-                </div>            */}
-            </div>
-
-        );
     }
 }
 
